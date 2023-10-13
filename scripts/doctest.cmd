@@ -1,1 +1,1 @@
-python -m pytest --doctest-modules --doctest-report none --doctest-continue-on-failure ./src/xtenors/%1
+python -m pytest --doctest-modules --doctest-report none --doctest-continue-on-failure ./src/xrates/%1
