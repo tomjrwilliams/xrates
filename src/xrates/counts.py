@@ -12,7 +12,7 @@ import functools
 import datetime
 import calendar
 
-import cython
+import cython # type: ignore
 
 import xtuples as xt
 import xtenors as tenors
@@ -306,7 +306,7 @@ def day_factor_actual_actual_isda(ddt1, ddt2):
 
     y_delta = max_ddt.year - min_ddt.year
 
-    return sign * sum(
+    return sign * sum((
         y_delta - 1,
         left_stub / (
             366 if _is_leap_year(min_ddt.year) else 365
@@ -314,14 +314,14 @@ def day_factor_actual_actual_isda(ddt1, ddt2):
         right_stub / (
             366 if _is_leap_year(max_ddt.year) else 365
         ),
-    )
+    ))
 
 # TODO: check should adjust
 def day_factor_actual_actual_afb(
     ddt1,
     ddt2,
-    iterator,
-    flags,
+    iterator: tenors.Iterator,
+    adjustment: typing.Optional[tenors.Adjustment] = None,
 ):
 
     dc = day_count_n_actual(ddt1, ddt2)
@@ -332,16 +332,21 @@ def day_factor_actual_actual_afb(
     sign = 1 if ddt1 < ddt2 else -1
     n_years = max_ddt.year - min_ddt.year
 
+    overflow = None if adjustment is None else adjustment.overflow
+    roll = None if adjustment is None else adjustment.roll
+    modified = None if adjustment is None else adjustment.modified
+    
     # adjustment needs an iterator
     ddt_adj = adjustments.adjust(
         arithmetic.add(
             max_ddt,
             years=n_years,
             iterator=iterator,
-            flags=flags,
+            overflow=overflow,
         ),
         iterator,
-        flags=flags,
+        roll=roll,
+        modified=modified,
     )
 
     dc_adj = day_count_n_actual(ddt1, ddt_adj)
@@ -472,7 +477,8 @@ def day_factor_not_n_30_360(
     freq = None,
     # flags = None,
     count=None,
-    iterator: typing.Optional[iterators. Iterator] = None,
+    iterator: typing.Optional[tenors.Iterator] = None,
+    adjustment: typing.Optional[tenors.Adjustment] = None,
 ):
     if count is conventions.Day_Count.ACTUAL_365_F:
         return day_factor_actual_365_f(ddt1, ddt2)
@@ -497,7 +503,7 @@ def day_factor_not_n_30_360(
 
     elif count is conventions.Day_Count.ACTUAL_ACTUAL_AFB:
         assert iterator is not None, iterator
-        return day_factor_actual_actual_afb(ddt1, ddt2, iterator)
+        return day_factor_actual_actual_afb(ddt1, ddt2, iterator, adjustment= adjustment)
 
     else:
         assert False, count

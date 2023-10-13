@@ -3,18 +3,14 @@ import os
 import sys
 import pathlib
 
-if pathlib.Path(os.getcwd()).parts[-1] == "xrates":
-    sys.path.append("./__local__")
+import os
+import sys
 
-    import PATHS
+sys.path.append("./__local__")
+sys.path.append("./src")
 
-    if PATHS.XTUPLES not in sys.path:
-        sys.path.append(PATHS.XTUPLES)
-        print(sys.path)
-
-    if PATHS.XTENORS not in sys.path:
-        sys.path.append(PATHS.XTENORS)
-        print(sys.path)
+sys.path.append(os.environ["xtuples"])
+sys.path.append(os.environ["xtenors"])
 
 from . import conventions
 from . import counts

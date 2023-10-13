@@ -9,3 +9,4 @@ sys.path.append("./__local__")
 sys.path.append("./src")
 
 sys.path.append(os.environ["xtuples"])
+sys.path.append(os.environ["xtenors"])
